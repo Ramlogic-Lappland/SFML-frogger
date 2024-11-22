@@ -1,51 +1,134 @@
-#include <SFML/Graphics.hpp>
+#include "frogger.h"
 
+#include <iostream>
+
+#include <SFML/Graphics.hpp>
+#include <SFML/Window.hpp>
+
+using namespace sf;
 
 namespace frogger
 {
-    void initGame(sf::Texture& texture);
-    void drawGame(sf::RenderWindow& window);
+    void initGame();
+    void initPlayer();
+    void initObstacle();
+    void updateGame();
+    void drawGame();
 
-    sf::RectangleShape frog(sf::Vector2f(100.f, 100.f));
+    RenderWindow* window;
+    Clock clock;
+    Time elapsed;
 
+    Vector2i screen = { 600, 600 };
+    Player player;
+    RectangleShape frog;
+    Texture* frogTexture;
+
+    Obstacle obstacle1;
+    RectangleShape obstacleBody;
     
 
     void run()
     {
-        sf::RenderWindow window(sf::VideoMode(600, 600), "SFML works!");
-        sf::Texture texture;
+        window = new RenderWindow(VideoMode(600, 600), "Frogger");
+         
 
-        initGame(texture);
+        initGame();
 
-        while (window.isOpen())
+        while (window->isOpen())
         {
-            sf::Event event;
-            while (window.pollEvent(event))
+            elapsed = clock.restart();
+
+            Event event;
+            while (window->pollEvent(event))
             {
-                if (event.type == sf::Event::Closed)
-                    window.close();
+                
+                if (event.type == Event::Closed)
+                    window->close();                         
             }
+            updateGame();
+            window->clear();
 
-            window.clear();
-
-            drawGame(window);
+            drawGame();
             
-            window.display();
+            window->display();
         }
+        delete window;
+        delete frogTexture;
     }
 
 
-    void initGame(sf::Texture& texture)
+    void initGame()
     {
-        frog.setFillColor(sf::Color::Green);
-        texture.loadFromFile("res/frogx2ver2.png");
+        initPlayer();
+        initObstacle();
 
-        frog.setTexture(&texture);
-        frog.setTextureRect(sf::IntRect(1, 1, 100, 100));
+        frog = RectangleShape(Vector2f(player.size.x, player.size.y));
+        frog.setFillColor(Color::Green);
+
+        obstacleBody = RectangleShape(Vector2f(obstacle1.size.x, obstacle1.size.y));
+        obstacleBody.setFillColor(Color::White);
+
+
+        frogTexture =  new Texture();
+        if (!frogTexture->loadFromFile("res/frogx2ver2.png"))
+        {
+            std::cout << "Error to load texture"; 
+        }
+
+        frog.setTexture(frogTexture);
+        frog.setTextureRect(IntRect(1, 1, 100, 100));  
     }
 
-    void drawGame(sf::RenderWindow& window)
+    void initObstacle()
     {
-        window.draw(frog);
+        obstacle1.size.x = 140.f;
+        obstacle1.size.y = 60.f;
+
+
+        obstacle1.pos.x = static_cast<float>(0 - obstacle1.size.x);
+        obstacle1.pos.y = 200.f;
+    }
+    void initPlayer()
+    {
+        player.lives = 3;
+        player.size = { 100.f, 100.f };
+        player.pos.x = static_cast<float>(screen.x / 2);
+        player.pos.y = static_cast<float>(screen.y  - 50);
+    }
+
+    void updateGame()
+    {
+        if (Keyboard::isKeyPressed(Keyboard::Up))
+        {
+            player.pos.y -= 200 * elapsed.asSeconds();
+        }
+        if (Keyboard::isKeyPressed(Keyboard::Right))
+        {
+            player.pos.x += 200 * elapsed.asSeconds();
+        }
+        if (Keyboard::isKeyPressed(Keyboard::Left))
+        {
+            player.pos.x -= 200 * elapsed.asSeconds();
+        }
+
+        if (obstacle1.pos.x < static_cast<float>(screen.x + obstacle1.size.x))
+        {
+            obstacle1.pos.x += 200 * elapsed.asSeconds();
+        }
+        else if (obstacle1.pos.x > static_cast<float>(screen.x + obstacle1.size.x))
+        {
+            initObstacle();
+        }
+
+
+        frog.setPosition(player.pos.x, player.pos.y);
+        obstacleBody.setPosition(obstacle1.pos.x, obstacle1.pos.y);
+    }
+
+    void drawGame()
+    {
+        window->draw(frog);
+        window->draw(obstacleBody);
     }
 }
