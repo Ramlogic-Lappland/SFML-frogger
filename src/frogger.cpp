@@ -25,8 +25,11 @@ namespace frogger
     Texture* frogTexture;
 
     Obstacle obstacle1;
-    RectangleShape obstacleBody;
-    
+    RectangleShape obstacleBody1;
+    Obstacle obstacle2;
+    RectangleShape obstacleBody2;
+    Obstacle obstacle3;
+    RectangleShape obstacleBody3;
 
     void run()
     {
@@ -66,8 +69,12 @@ namespace frogger
         frog = RectangleShape(Vector2f(player.size.x, player.size.y));
         frog.setFillColor(Color::Green);
 
-        obstacleBody = RectangleShape(Vector2f(obstacle1.size.x, obstacle1.size.y));
-        obstacleBody.setFillColor(Color::White);
+        obstacleBody1 = RectangleShape(Vector2f(obstacle1.size.x, obstacle1.size.y));
+        obstacleBody1.setFillColor(Color::White);
+        obstacleBody2 = RectangleShape(Vector2f(obstacle1.size.x, obstacle1.size.y));
+        obstacleBody2.setFillColor(Color::White);
+        obstacleBody3 = RectangleShape(Vector2f(obstacle1.size.x, obstacle1.size.y));
+        obstacleBody3.setFillColor(Color::White);
 
 
         frogTexture =  new Texture();
@@ -83,11 +90,19 @@ namespace frogger
     void initObstacle()
     {
         obstacle1.size.x = 140.f;
-        obstacle1.size.y = 60.f;
-
-
+        obstacle1.size.y = 40.f;
         obstacle1.pos.x = static_cast<float>(0 - obstacle1.size.x);
         obstacle1.pos.y = 200.f;
+
+        obstacle2.size.x = 80.f;
+        obstacle2.size.y = 40.f;
+        obstacle2.pos.x = static_cast<float>(0 - obstacle2.size.x);
+        obstacle2.pos.y = 400.f;
+
+        obstacle3.size.x = 80.f;
+        obstacle3.size.y = 40.f;
+        obstacle3.pos.x = static_cast<float>(0 - (obstacle3.size.x * 6));
+        obstacle3.pos.y = 400.f;
     }
     void initPlayer()
     {
@@ -102,6 +117,10 @@ namespace frogger
         if (Keyboard::isKeyPressed(Keyboard::Up))
         {
             player.pos.y -= 200 * elapsed.asSeconds();
+        }
+        if (Keyboard::isKeyPressed(Keyboard::Down))
+        {
+            player.pos.y += 200 * elapsed.asSeconds();
         }
         if (Keyboard::isKeyPressed(Keyboard::Right))
         {
@@ -118,17 +137,39 @@ namespace frogger
         }
         else if (obstacle1.pos.x > static_cast<float>(screen.x + obstacle1.size.x))
         {
-            initObstacle();
+            obstacle1.pos.x = static_cast<float>(0 - obstacle1.size.x);
+        }
+
+        if (obstacle2.pos.x < static_cast<float>(screen.x + obstacle1.size.x))
+        {
+            obstacle2.pos.x += 200 * elapsed.asSeconds();
+        }
+        else if (obstacle2.pos.x > static_cast<float>(screen.x + obstacle2.size.x))
+        {
+            obstacle2.pos.x = static_cast<float>(0 - obstacle2.size.x);
+        }
+
+        if (obstacle3.pos.x < static_cast<float>(screen.x + obstacle3.size.x))
+        {
+            obstacle3.pos.x += 200 * elapsed.asSeconds();
+        }
+        else if (obstacle3.pos.x > static_cast<float>(screen.x + obstacle3.size.x))
+        {
+            obstacle3.pos.x = static_cast<float>(0 - (obstacle3.size.x));
         }
 
 
         frog.setPosition(player.pos.x, player.pos.y);
-        obstacleBody.setPosition(obstacle1.pos.x, obstacle1.pos.y);
+        obstacleBody1.setPosition(obstacle1.pos.x, obstacle1.pos.y);
+        obstacleBody2.setPosition(obstacle2.pos.x, obstacle2.pos.y);
+        obstacleBody3.setPosition(obstacle3.pos.x, obstacle3.pos.y);
     }
 
     void drawGame()
     {
         window->draw(frog);
-        window->draw(obstacleBody);
+        window->draw(obstacleBody1);
+        window->draw(obstacleBody2);
+        window->draw(obstacleBody3);
     }
 }
