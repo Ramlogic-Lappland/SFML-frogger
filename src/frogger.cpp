@@ -3,15 +3,19 @@
 
 namespace frogger
 {
-    void initGame();
+    void initGame(sf::Texture& texture);
+    void drawGame(sf::RenderWindow& window);
+
+    sf::RectangleShape frog(sf::Vector2f(100.f, 100.f));
+
+    
 
     void run()
     {
-        //initGame();
-
         sf::RenderWindow window(sf::VideoMode(600, 600), "SFML works!");
-        sf::CircleShape shape(100.f);
-        shape.setFillColor(sf::Color::Green);
+        sf::Texture texture;
+
+        initGame(texture);
 
         while (window.isOpen())
         {
@@ -23,14 +27,25 @@ namespace frogger
             }
 
             window.clear();
-            window.draw(shape);
+
+            drawGame(window);
+            
             window.display();
         }
     }
 
 
-    void initGame()
+    void initGame(sf::Texture& texture)
     {
+        frog.setFillColor(sf::Color::Green);
+        texture.loadFromFile("res/frogx2ver2.png");
 
+        frog.setTexture(&texture);
+        frog.setTextureRect(sf::IntRect(1, 1, 100, 100));
+    }
+
+    void drawGame(sf::RenderWindow& window)
+    {
+        window.draw(frog);
     }
 }
